@@ -19,15 +19,14 @@ function Navbar({
     <div
       className={cn("fixed top-10 inset-x-0 max-w-2xl mx-auto z-50", className)}>
       <Menu setActive={setActive}>
-        <MenuItem setActive={setActive} active={active} item="Services">
+        <MenuItem setActive={setActive} active={active} item="Menu">
           <div className="flex flex-col space-y-4 text-sm">
-            <HoveredLink href="/web-dev">Web Development</HoveredLink>
-            <HoveredLink href="/interface-design">Interface Design</HoveredLink>
-            <HoveredLink href="/seo">Search Engine Optimization</HoveredLink>
-            <HoveredLink href="/branding">Branding</HoveredLink>
-          </div>
+            <HoveredLink href="/">Home</HoveredLink>
+            <HoveredLink href="/about">About</HoveredLink>
+            <HoveredLink href="/contact">Contact</HoveredLink>
+          </div>  
         </MenuItem>
-        <MenuItem setActive={setActive} active={active} item="Products">
+        {/* <MenuItem setActive={setActive} active={active} item="Products">
           <div className="  text-sm grid grid-cols-2 gap-10 p-4">
             <ProductItem
               title="Algochurn"
@@ -50,13 +49,17 @@ function Navbar({
               src="https://assets.aceternity.com/demos/Screenshot+2024-02-21+at+11.47.07%E2%80%AFPM.png"
               description="Respond to government RFPs, RFIs and RFQs 10x faster using AI" />
           </div>
-        </MenuItem>
-        <MenuItem setActive={setActive} active={active} item="Pricing">
+        </MenuItem> */}
+        <MenuItem setActive={setActive} active={active} item="Transactions">
           <div className="flex flex-col space-y-4 text-sm">
-            <HoveredLink href="/hobby">Hobby</HoveredLink>
-            <HoveredLink href="/individual">Individual</HoveredLink>
-            <HoveredLink href="/team">Team</HoveredLink>
-            <HoveredLink href="/enterprise">Enterprise</HoveredLink>
+            <HoveredLink href="/donated">Sent</HoveredLink>
+            <HoveredLink href="/received">Recevied</HoveredLink>
+          </div>
+        </MenuItem>
+        <MenuItem setActive={setActive} active={active} item="Start Here">
+          <div className="flex flex-col space-y-4 text-sm">
+            <HoveredLink href="/signin">Sign in</HoveredLink>
+            <HoveredLink href="/signup">Sign up</HoveredLink>
           </div>
         </MenuItem>
       </Menu>

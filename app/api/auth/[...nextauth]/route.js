@@ -7,6 +7,7 @@ import GitHubProvider from "next-auth/providers/github";
 import mongoose from "mongoose";
 import User from "@/models/User";
 import Payment from "@/models/Payment";
+import connectDb from "@/db/connectDB";
 
 export const authoptions = NextAuth({
   providers: [
@@ -30,7 +31,8 @@ export const authoptions = NextAuth({
   async signIn({ user, account, profile, credentials }) {
     if(account.provider=="google"){
       const email = profile.email;
-      const client = await mongoose.connect(process.env.MONGO_URI);
+      // const client = await mongoose.connect(process.env.MONGO_URI);
+      await connectDb()
       const curruser = await User.findOne({email: email});
 
 

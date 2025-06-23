@@ -1,7 +1,9 @@
 "use client"
-import { useState } from "react"
+import { useSession, signIn, signOut } from "next-auth/react"
+import { useState, useEffect } from "react"
 import {
   IconBrandGoogle,
+  IconBrandGithub,
   IconShield,
   IconLock,
   IconCheck,
@@ -9,8 +11,18 @@ import {
   IconEyeOff,
   IconFingerprint,
 } from "@tabler/icons-react"
+import { useRouter } from "next/navigation"
 
 export default function Signin() {
+    const {data: session} = useSession();
+        const router = useRouter();
+        
+        useEffect(() => {
+        if (session) {
+          router.push("/");
+        }
+      }, [session, router]);
+
   const [form, setForm] = useState({
     email: "",
     pass: "",
@@ -97,12 +109,12 @@ export default function Signin() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="text-sm font-semibold text-gray-300">Password</label>
-                <a
+                {/* <a
                   href="/forgot-password"
                   className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
                 >
                   Forgot password?
-                </a>
+                </a> */}
               </div>
               <div className="relative">
                 <input
@@ -173,11 +185,20 @@ export default function Signin() {
 
             {/* Social Login */}
             <button
+                onClick={()=>signIn("google")}
               type="button"
-              className="group w-full flex items-center justify-center gap-3 py-3 px-4 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50 rounded-xl text-gray-300 hover:text-white transition-all duration-300"
+              className="group cursor-pointer w-full flex items-center justify-center gap-3 py-3 px-4 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50 rounded-xl text-gray-300 hover:text-white transition-all duration-300"
             >
               <IconBrandGoogle className="w-5 h-5" />
               <span className="font-medium">Continue with Google</span>
+            </button>
+            <button
+                onClick={()=>{signIn("github")}}
+              type="button"
+              className="group cursor-pointer w-full flex items-center justify-center gap-3 py-3 px-4 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50 rounded-xl text-gray-300 hover:text-white transition-all duration-300"
+            >
+              <IconBrandGithub className="w-5 h-5" />
+              <span className="font-medium">Continue with Github</span>
             </button>
           </form>
 

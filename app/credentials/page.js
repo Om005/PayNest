@@ -443,15 +443,6 @@ export default function Credentials() {
                     </div>
                     <div>
                       <h4 className="font-medium text-gray-300 mb-1">
-                        Test vs Live keys
-                      </h4>
-                      <p className="text-gray-400">
-                        Use test keys for development and live keys for
-                        production. Test keys start with "rzp_test_".
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-gray-300 mb-1">
                         Security
                       </h4>
                       <p className="text-gray-400">

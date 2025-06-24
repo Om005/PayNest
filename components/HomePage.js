@@ -21,7 +21,7 @@ export default function HomePage() {
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
-      <section className="container mx-auto px-4 pt-20 pb-16 relative z-10">
+      <section className="container mt-14 mx-auto px-4 pt-20 pb-16 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8 animate-fade-in-up">

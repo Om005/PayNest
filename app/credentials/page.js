@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import {
   IconShield,
@@ -16,9 +16,11 @@ import {
   IconExternalLink,
   IconInfoCircle,
 } from "@tabler/icons-react"
+import { delcreds, getcreds, setcreds, validateRazorpayCredentials } from "@/actions/useractions"
+import toast from "react-hot-toast"
 
 export default function Credentials() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [credentials, setCredentials] = useState({
     razorpayId: "",
     razorpaySecret: "",
@@ -33,66 +35,53 @@ export default function Credentials() {
   const [existingCredentials, setExistingCredentials] = useState({
     razorpayId: "rzp_test_1234567890",
     razorpaySecret: "••••••••••••••••••••••••••••••••",
+    tm: "••••••••••••••••••••••••••••••••",
     isConfigured: true,
     lastUpdated: "2024-01-15T10:30:00Z",
     status: "active",
   })
 
-  const validateCredentials = () => {
-    const newErrors = {}
-
-    if (!credentials.razorpayId.trim()) {
-      newErrors.razorpayId = "Razorpay ID is required"
-    } else if (!credentials.razorpayId.startsWith("rzp_")) {
-      newErrors.razorpayId = "Invalid Razorpay ID format (should start with 'rzp_')"
-    }
-
-    if (!credentials.razorpaySecret.trim()) {
-      newErrors.razorpaySecret = "Razorpay Secret is required"
-    } else if (credentials.razorpaySecret.length < 20) {
-      newErrors.razorpaySecret = "Razorpay Secret seems too short"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
 
   const handleSave = async () => {
-    if (!validateCredentials()) return
+    const rsp = await validateRazorpayCredentials(credentials.razorpayId, credentials.razorpaySecret);
 
+    if(rsp.valid==false){
+      toast.error("Invlid credentials");
+      return;
+    }
     setIsLoading(true)
-    setSuccessMessage("")
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      setIsEditing(false)
-      setExistingCredentials({
-        razorpayId: credentials.razorpayId,
-        razorpaySecret: "••••••••••••••••••••••••••••••••",
-        isConfigured: true,
-        lastUpdated: new Date().toISOString(),
-        status: "active",
+    const res = await setcreds(session.user.email, credentials.razorpayId, credentials.razorpaySecret);
+    console.log(res.id);
+    if(res.success==true){
+      setExistingCredentials({...existingCredentials, razorpayId: credentials.razorpayId, razorpaySecret: credentials.razorpaySecret, status: "active"});
+      toast.success("Credentials Saved");
+      setCredentials({
+        ...credentials,
+        razorpaySecret: existingCredentials.tm,
       })
-      setSuccessMessage("Credentials updated successfully!")
-      setCredentials({ razorpayId: "", razorpaySecret: "" })
-
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccessMessage(""), 3000)
-    }, 2000)
+    }
+    else{
+      toast.success(res.message);
+    }
+    setIsLoading(false);
+    setIsEditing(false);
+    
   }
 
   const handleEdit = () => {
     setIsEditing(true)
     setCredentials({
-      razorpayId: existingCredentials.razorpayId,
-      razorpaySecret: "",
+      ...credentials, 
+      razorpaySecret: existingCredentials.razorpaySecret,
     })
   }
-
+  
   const handleCancel = () => {
     setIsEditing(false)
-    setCredentials({ razorpayId: "", razorpaySecret: "" })
+    setCredentials({
+      razorpayId: existingCredentials.razorpayId,
+      razorpaySecret: existingCredentials.tm,
+    })
     setErrors({})
   }
 
@@ -101,19 +90,26 @@ export default function Credentials() {
       return
     }
 
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      setExistingCredentials({
-        razorpayId: "",
-        razorpaySecret: "",
-        isConfigured: false,
-        lastUpdated: null,
-        status: "inactive",
-      })
-      setSuccessMessage("Credentials deleted successfully!")
-      setTimeout(() => setSuccessMessage(""), 3000)
-    }, 1000)
+    const rsp = await delcreds(session.user.email);
+    if(rsp.success){
+      setExistingCredentials({...existingCredentials, razorpayId: "Configure to active", razorpaySecret: "Confiture to active", status: "inactive"});
+      // setExistingCredentials({...existingCredentials, status: "inactive"});
+      setCredentials({...credentials, razorpayId: "Configure to active", razorpaySecret: "Confiture to active"});
+    }
+    
+    // setIsLoading(true)
+    // setTimeout(() => {
+    //   setIsLoading(false)
+    //   setExistingCredentials({
+    //     razorpayId: "",
+    //     razorpaySecret: "",
+    //     isConfigured: false,
+    //     lastUpdated: null,
+    //     status: "inactive",
+    //   })
+    //   setSuccessMessage("Credentials deleted successfully!")
+    //   setTimeout(() => setSuccessMessage(""), 3000)
+    // }, 1000)
   }
 
   const copyToClipboard = (text) => {
@@ -121,6 +117,37 @@ export default function Credentials() {
     // You could add a toast notification here
   }
 
+  useEffect(() => {
+    if(status!="loading"){
+    
+          const fn = async () => {
+          try {
+            const rsp = await getcreds(session.user.email);
+            console.log(rsp);
+            if(rsp.success){
+              if(rsp.isactive){
+                setExistingCredentials({...existingCredentials, razorpayId: rsp.id, razorpaySecret: rsp.secret, status: "active" })
+                setCredentials({razorpayId: rsp.id, razorpaySecret: existingCredentials.tm});
+              }
+              else{
+                setExistingCredentials({...existingCredentials, razorpayId: "Configure to active", razorpaySecret: "Configure to active", status: "inactive" })
+                setCredentials({razorpayId: "Configure to active", razorpaySecret: existingCredentials.tm});
+              }
+              
+            }
+            else{
+              toast.error("Error in fetching credentials");
+            }
+          } catch (err) {
+            console.error("Error fetching friends:", err);
+          }
+        };
+    
+        fn();
+        }
+  }, [status])
+  
+  if(status=="loading") return null;
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-950 to-slate-900 pt-24 pb-12">
       {/* Background Effects */}
@@ -197,12 +224,12 @@ export default function Credentials() {
                         {existingCredentials.status === "active" ? (
                           <>
                             <IconCheck className="w-3 h-3 inline mr-1" />
-                            Active
+                            Account is active
                           </>
                         ) : (
                           <>
                             <IconX className="w-3 h-3 inline mr-1" />
-                            Inactive
+                            Account is inactive
                           </>
                         )}
                       </span>
@@ -219,7 +246,7 @@ export default function Credentials() {
                         <label className="block text-sm font-semibold text-gray-300 mb-2">Razorpay ID</label>
                         <div className="flex items-center gap-2">
                           <div className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-white font-mono">
-                            {existingCredentials.razorpayId}
+                            {credentials.razorpayId}
                           </div>
                           <button
                             onClick={() => copyToClipboard(existingCredentials.razorpayId)}
@@ -235,7 +262,7 @@ export default function Credentials() {
                         <label className="block text-sm font-semibold text-gray-300 mb-2">Razorpay Secret</label>
                         <div className="flex items-center gap-2">
                           <div className="flex-1 px-4 py-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-white font-mono">
-                            {existingCredentials.razorpaySecret}
+                            {credentials.razorpaySecret}
                           </div>
                           <button className="p-3 bg-slate-800/50 border border-slate-700/50 rounded-xl text-gray-400 cursor-not-allowed">
                             <IconLock className="w-5 h-5" />
@@ -245,9 +272,6 @@ export default function Credentials() {
                       </div>
 
                       {/* Last Updated */}
-                      <div className="text-sm text-gray-400">
-                        Last updated: {new Date(existingCredentials.lastUpdated).toLocaleString()}
-                      </div>
 
                       {/* Action Buttons */}
                       <div className="flex gap-4 pt-4">
@@ -421,12 +445,12 @@ export default function Credentials() {
                     <span className="text-gray-300">Payment Processing</span>
                     <span
                       className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                        existingCredentials.isConfigured
+                        existingCredentials.status=="active"
                           ? "text-emerald-400 bg-emerald-900/20"
                           : "text-yellow-400 bg-yellow-900/20"
                       }`}
                     >
-                      {existingCredentials.isConfigured ? "Enabled" : "Setup Required"}
+                      {existingCredentials.status=="active" ? "Enabled" : "Disabled"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">

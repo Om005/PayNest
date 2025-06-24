@@ -91,7 +91,7 @@ function Navbar({ className }) {
               <div className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
                 <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
                   <span className="text-white scale-200 font-semibold text-sm">
-                    {session.user?.name?.charAt(0) || session.user?.email?.charAt(0) || "U"}
+                    {session.user?.name?.charAt(0).toUpperCase() || session.user?.email?.charAt(0).toUpperCase() || "U"}
                   </span>
                 </div>
                 <div>

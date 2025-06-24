@@ -9,6 +9,7 @@ const userShema = new mongoose.Schema({
     friends: {type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], default: []},
     razorpay_id: {type: String, default:""},
     razorpay_secret: {type: String, default:""},
+    iv: {type: String, default: ""},
     active: {type: Boolean, default: false}
 
 });

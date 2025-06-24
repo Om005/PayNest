@@ -6,6 +6,34 @@ import connectDb from "@/db/connectDB"
 import User from "@/models/User"
 import { NextResponse } from "next/server"
 import mongoose from "mongoose"
+import crypto from 'crypto';
+
+const algorithm = 'aes-256-cbc';
+// Derive a 32-byte key once:
+const key = crypto.createHash('sha256')
+                  .update(process.env.ENCRYPTION_SECRET, 'utf8')
+                  .digest();
+
+function encrypt(plainText) {
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv(algorithm, key, iv);
+  let data  = cipher.update(plainText, 'utf8', 'hex');
+  data += cipher.final('hex');
+  return {
+    iv:   iv.toString('hex'),
+    data
+  };
+}
+
+function decrypt(cipherHex, ivHex) {
+  const iv = Buffer.from(ivHex, 'hex');
+  const decipher = crypto.createDecipheriv(algorithm, key, iv);
+  let plain = decipher.update(cipherHex, 'hex', 'utf8');
+  plain += decipher.final('utf8');
+  return plain;
+}
+
+
 
 export const initiate = async(amount, from_user, to_user, message)=>{
     await connectDb();
@@ -53,6 +81,18 @@ export const fetchfriend = async(email)=>{
   try {
     await connectDb();
     const user = await User.findOne({email: email}).populate("friends"); // ensures plain objects
+  
+    return { success: true, data: JSON.parse(JSON.stringify(user)) }; // ✅ deeply plain
+  } catch (err) {
+    console.error("fetchall error:", err);
+    return { success: false, message: "Internal Server Error" };
+  }
+}
+
+export const getuser = async(email)=>{
+  try {
+    await connectDb();
+    const user = await User.findOne({email: email}); // ensures plain objects
   
     return { success: true, data: JSON.parse(JSON.stringify(user)) }; // ✅ deeply plain
   } catch (err) {
@@ -120,8 +160,19 @@ export const getrecent = async (useremail) => {
 export const setcreds = async (email, key_id, key_secret)=>{
   try {
     await connectDb();
-  
-    const user = await User.findOneAndUpdate({email: email}, {razorpay_id: key_id, razorpay_secret: key_secret, active: true});
+
+    
+  const { data: encryptedSecret, iv } = encrypt(key_secret);
+    const user = await User.findOneAndUpdate(
+      { email: email },
+      {
+        razorpay_id: key_id,
+        razorpay_secret: encryptedSecret,
+        iv: iv, // store the IV too!
+        active: true
+      },
+      { new: true } // return the updated document if needed
+    );
     
     return { success: true, message: "Done" };
   } catch (err) {
@@ -138,8 +189,10 @@ export const getcreds = async (email)=>{
     if(!user){
       return {success: false, message: "User does not exist"};
     }
-    
-    return { success: true, id: user.razorpay_id, secret: user.razorpay_secret, isactive: user.active };
+    if(user.active==false) return {success: true, message: "User is not active"};
+    const decryptedSecret = decrypt(user.razorpay_secret, user.iv);
+
+    return { success: true, id: user.razorpay_id, secret: decryptedSecret, isactive: user.active };
   } catch (err) {
     console.error("Credentials error:", err);
     return { success: false, message: "Internal server error" };
@@ -156,6 +209,23 @@ export const delcreds = async (email)=>{
     }
     const rsp = await User.findOneAndUpdate({email: email}, {razorpay_id: "", razorpay_secret: "", active: false});
     return { success: true, message: "Account deactivated" };
+  } catch (err) {
+    console.error("Credentials error:", err);
+    return { success: false, message: "Internal server error" };
+  }
+  
+}
+
+export const updatename = async(email, newname)=>{
+  try {
+    await connectDb();
+  
+    const user = await User.findOne({email: email});
+    if(!user){
+      return {success: false, message: "User does not exist"};
+    }
+    const rsp = await User.findOneAndUpdate({email: email}, {name: newname});
+    return { success: true, message: "Name updated" };
   } catch (err) {
     console.error("Credentials error:", err);
     return { success: false, message: "Internal server error" };
@@ -183,3 +253,57 @@ export const validateRazorpayCredentials = async (key_id, key_secret) => {
     return { valid: false, message: "Invalid credentials", error: err.message };
   }
 };
+
+
+export const getPayments = async (userEmail) => {
+  try {
+    await connectDb();
+
+    const transactions = await Payment.find({
+      $or: [{ from_user: userEmail }, { to_user: userEmail }],
+      status: "completed",
+    });
+
+    let totalSent = 0;
+    let totalReceived = 0;
+
+    for (const tx of transactions) {
+      if (tx.from_user === userEmail) {
+        totalSent += tx.amount;
+      } else if (tx.to_user === userEmail) {
+        totalReceived += tx.amount;
+      }
+    }
+
+    return {
+      totalSent,
+      totalReceived,
+      totalTransactions: transactions.length,
+    };
+  } catch (err) {
+    console.error("getUserPaymentStats error:", err);
+    return {
+      totalSent: 0,
+      totalReceived: 0,
+      totalTransactions: 0,
+      error: "Internal server error",
+    };
+  }
+};
+
+
+export const getAllTransactions = async(email)=>{
+  try {
+    await connectDb();
+  
+    const transactions = await Payment.find({
+      $or: [{ from_user: email }, { to_user: email }],
+    });
+  
+    return {success: true, data: JSON.parse(JSON.stringify(transactions))};
+  } catch (err) {
+    console.error("getUserPaymentStats error:", err);
+    return {success: false, message: err.message};
+  }
+  
+}

@@ -204,20 +204,20 @@ export default function HomePage() {
                 {
                   step: "1",
                   icon: Smartphone,
-                  title: "Choose Recipient",
-                  description: "Select from your contacts or enter their details with our smart search",
+                  title: "Create Your Account",
+                  description: "Sign in with your google account",
                 },
                 {
                   step: "2",
                   icon: CreditCard,
-                  title: "Enter Amount",
-                  description: "Type the amount and add a personal message with emoji support",
+                  title: "Setup Your Credentials",
+                  description: "Enter your razorpay id and secret which will be encrypted before storing",
                 },
                 {
                   step: "3",
                   icon: Send,
                   title: "Send Instantly",
-                  description: "Confirm with biometric security and watch your money fly",
+                  description: "Done, now you can send money to any active account",
                 },
               ].map((step, index) => (
                 <div

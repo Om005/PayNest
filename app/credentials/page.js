@@ -18,6 +18,7 @@ import {
 } from "@tabler/icons-react"
 import { delcreds, getcreds, setcreds, validateRazorpayCredentials } from "@/actions/useractions"
 import toast from "react-hot-toast"
+import { NavbarDemo } from "@/components/NavbarDemo"
 
 export default function Credentials() {
   const { data: session, status } = useSession()
@@ -150,6 +151,7 @@ export default function Credentials() {
   if(status=="loading") return null;
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-950 to-slate-900 pt-24 pb-12">
+      <NavbarDemo/>
       {/* Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/10 via-transparent to-transparent"></div>
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
@@ -186,22 +188,7 @@ export default function Credentials() {
                 <h3 className="text-lg font-semibold text-white mb-2">Security Notice</h3>
                 <p className="text-gray-300 text-sm leading-relaxed mb-3">
                   Your Razorpay credentials are encrypted and stored securely. Never share your secret key with anyone.
-                  PayNest uses bank-level security to protect your sensitive information.
                 </p>
-                <div className="flex items-center gap-4 text-xs text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <IconLock className="w-3 h-3 text-emerald-400" />
-                    <span>256-bit Encryption</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <IconShield className="w-3 h-3 text-emerald-400" />
-                    <span>SOC 2 Compliant</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <IconCheck className="w-3 h-3 text-emerald-400" />
-                    <span>PCI DSS Certified</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

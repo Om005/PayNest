@@ -12,6 +12,7 @@ import {
   IconFingerprint,
 } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
+import { NavbarDemo } from "@/components/NavbarDemo"
 
 export default function Signin() {
     const {data: session} = useSession();
@@ -92,96 +93,6 @@ export default function Signin() {
         <div className="bg-slate-900/30 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
-            <div>
-              <label className={labelClasses}>Email Address</label>
-              <input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className={`${inputClasses} ${errors.email ? "border-red-500/50 focus:ring-red-500/50" : ""}`}
-                placeholder="john@example.com"
-                autoComplete="email"
-              />
-              {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-semibold text-gray-300">Password</label>
-                {/* <a
-                  href="/forgot-password"
-                  className="text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
-                >
-                  Forgot password?
-                </a> */}
-              </div>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={form.pass}
-                  onChange={(e) => setForm({ ...form, pass: e.target.value })}
-                  className={`${inputClasses} pr-12 ${errors.pass ? "border-red-500/50 focus:ring-red-500/50" : ""}`}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
-                >
-                  {showPassword ? <IconEyeOff className="w-5 h-5" /> : <IconEye className="w-5 h-5" />}
-                </button>
-              </div>
-              {errors.pass && <p className="text-red-400 text-xs mt-1">{errors.pass}</p>}
-            </div>
-
-            {/* Remember Me */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 text-emerald-600 bg-slate-800 border-slate-600 rounded focus:ring-emerald-500 focus:ring-2"
-                />
-                <label htmlFor="remember" className="text-sm text-gray-400">
-                  Keep me signed in
-                </label>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative w-full py-4 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Signing In...
-                </div>
-              ) : (
-                <>
-                  Sign In
-                  <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                </>
-              )}
-            </button>
-
-            {/* Biometric Login */}
-
-            {/* Divider */}
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-700/50"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-slate-900/30 text-gray-400">Or continue with</span>
-              </div>
-            </div>
 
             {/* Social Login */}
             <button

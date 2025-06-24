@@ -72,9 +72,6 @@ function Navbar({ className }) {
               <HoveredLink href="/send" icon={<IconSend className="w-4 h-4 text-emerald-400" />}>
                 Send Money
               </HoveredLink>
-              <HoveredLink href="/received" icon={<IconNetwork className="w-4 h-4 text-teal-400" />}>
-                My Contacts
-              </HoveredLink>
               <HoveredLink href="/credentials" icon={<IconCircleDashedPercentage className="w-4 h-4 text-teal-400" />}>
                 Your Credentials
               </HoveredLink>
@@ -113,12 +110,6 @@ function Navbar({ className }) {
                 </button>
               </div>
 
-              <div className="border-t border-gray-700 pt-2 mt-2">
-                <div className="flex items-center gap-2 text-xs text-emerald-400">
-                  <IconShield className="w-3 h-3" />
-                  <span>Account Verified & Secure</span>
-                </div>
-              </div>
             </div>
           </MenuItem>
         )}

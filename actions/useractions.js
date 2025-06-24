@@ -1,64 +1,67 @@
-"use server"
+"use server";
 
-import Razorpay from "razorpay"
-import Payment from "@/models/Payment"
-import connectDb from "@/db/connectDB"
-import User from "@/models/User"
-import { NextResponse } from "next/server"
-import mongoose from "mongoose"
-import crypto from 'crypto';
+import Razorpay from "razorpay";
+import Payment from "@/models/Payment";
+import connectDb from "@/db/connectDB";
+import User from "@/models/User";
+import { NextResponse } from "next/server";
+import mongoose from "mongoose";
+import crypto from "crypto";
 
-const algorithm = 'aes-256-cbc';
-// Derive a 32-byte key once:
-const key = crypto.createHash('sha256')
-                  .update(process.env.ENCRYPTION_SECRET, 'utf8')
-                  .digest();
+const algorithm = "aes-256-cbc";
+const key = crypto
+  .createHash("sha256")
+  .update(process.env.ENCRYPTION_SECRET, "utf8")
+  .digest();
 
 function encrypt(plainText) {
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv(algorithm, key, iv);
-  let data  = cipher.update(plainText, 'utf8', 'hex');
-  data += cipher.final('hex');
+  let data = cipher.update(plainText, "utf8", "hex");
+  data += cipher.final("hex");
   return {
-    iv:   iv.toString('hex'),
-    data
+    iv: iv.toString("hex"),
+    data,
   };
 }
 
 function decrypt(cipherHex, ivHex) {
-  const iv = Buffer.from(ivHex, 'hex');
+  const iv = Buffer.from(ivHex, "hex");
   const decipher = crypto.createDecipheriv(algorithm, key, iv);
-  let plain = decipher.update(cipherHex, 'hex', 'utf8');
-  plain += decipher.final('utf8');
+  let plain = decipher.update(cipherHex, "hex", "utf8");
+  plain += decipher.final("utf8");
   return plain;
 }
 
+export const initiate = async (amount, from_user, to_user, message) => {
+  await connectDb();
+  const user = await User.findOne({ email: to_user });
+  if (!user) {
+    return { success: false, message: "User not found" };
+  }
+  if (user.active == false) {
+    return { success: false, message: "Account is inactive" };
+  }
+  const secret = decrypt(user.razorpay_secret, user.iv);
+  var instance = new Razorpay({ key_id: user.razorpay_id, key_secret: secret });
 
+  let options = {
+    amount: Number.parseInt(amount),
+    currency: "INR",
+  };
 
-export const initiate = async(amount, from_user, to_user, message)=>{
-    await connectDb();
-    const user = await User.findOne({email: to_user});
-    if(!user){
-      return {success: false, message: "User not found"};
-    }
-    if(user.active==false){
-      return {success: false, message: "Account is inactive"};
-    }
-    var instance = new Razorpay({ key_id: user.razorpay_id, key_secret: user.razorpay_secret })
+  let rsp = await instance.orders.create(options);
+  await Payment.create({
+    oid: rsp.id,
+    amount: amount / 100,
+    from_user: from_user,
+    to_user: to_user,
+    message: message,
+    status: "failed",
+  });
 
-    
-    let options = {
-        amount: Number.parseInt(amount),
-        currency: "INR",
-    }
-
-    let rsp = await instance.orders.create(options)
-    await Payment.create({oid: rsp.id, amount: amount/100, from_user: from_user ,to_user: to_user, message: message, status: "failed"});
-
-    return rsp;
-}
-
-
+  return rsp;
+};
 
 export const fetchall = async (searchTerm) => {
   try {
@@ -68,53 +71,55 @@ export const fetchall = async (searchTerm) => {
         { name: { $regex: searchTerm, $options: "i" } },
         { email: { $regex: searchTerm, $options: "i" } },
       ],
-    }).lean(); // ensures plain objects
+    }).lean();
 
-    return { success: true, data: JSON.parse(JSON.stringify(users)) }; // ✅ deeply plain
+    return { success: true, data: JSON.parse(JSON.stringify(users)) };
   } catch (err) {
     console.error("fetchall error:", err);
     return { success: false, message: "Internal Server Error" };
   }
 };
 
-export const fetchfriend = async(email)=>{
+export const fetchfriend = async (email) => {
   try {
     await connectDb();
-    const user = await User.findOne({email: email}).populate("friends"); // ensures plain objects
-  
-    return { success: true, data: JSON.parse(JSON.stringify(user)) }; // ✅ deeply plain
-  } catch (err) {
-    console.error("fetchall error:", err);
-    return { success: false, message: "Internal Server Error" };
-  }
-}
+    const user = await User.findOne({ email: email }).populate("friends");
 
-export const getuser = async(email)=>{
-  try {
-    await connectDb();
-    const user = await User.findOne({email: email}); // ensures plain objects
-  
-    return { success: true, data: JSON.parse(JSON.stringify(user)) }; // ✅ deeply plain
+    return { success: true, data: JSON.parse(JSON.stringify(user)) };
   } catch (err) {
     console.error("fetchall error:", err);
     return { success: false, message: "Internal Server Error" };
   }
-}
+};
 
-export const addfriend = async(useremail, friend_id)=>{
+export const getuser = async (email) => {
   try {
     await connectDb();
-    const user = await User.findOneAndUpdate({email: useremail}, {
-  $addToSet: { friends: friend_id },
-})
-  
-    return { success: true, message: "Contact added" }; // ✅ deeply plain
+    const user = await User.findOne({ email: email });
+
+    return { success: true, data: JSON.parse(JSON.stringify(user)) };
   } catch (err) {
     console.error("fetchall error:", err);
     return { success: false, message: "Internal Server Error" };
   }
-  
-}
+};
+
+export const addfriend = async (useremail, friend_id) => {
+  try {
+    await connectDb();
+    const user = await User.findOneAndUpdate(
+      { email: useremail },
+      {
+        $addToSet: { friends: friend_id },
+      }
+    );
+
+    return { success: true, message: "Contact added" };
+  } catch (err) {
+    console.error("fetchall error:", err);
+    return { success: false, message: "Internal Server Error" };
+  }
+};
 
 export const removefriend = async (useremail, friend_id) => {
   try {
@@ -122,7 +127,7 @@ export const removefriend = async (useremail, friend_id) => {
     const user = await User.findOneAndUpdate(
       { email: useremail },
       {
-        $pull: { friends: new mongoose.Types.ObjectId(friend_id) }, // removes friend_id from friends array
+        $pull: { friends: new mongoose.Types.ObjectId(friend_id) },
       }
     );
 
@@ -157,83 +162,88 @@ export const getrecent = async (useremail) => {
   }
 };
 
-export const setcreds = async (email, key_id, key_secret)=>{
+export const setcreds = async (email, key_id, key_secret) => {
   try {
     await connectDb();
 
-    
-  const { data: encryptedSecret, iv } = encrypt(key_secret);
+    const { data: encryptedSecret, iv } = encrypt(key_secret);
     const user = await User.findOneAndUpdate(
       { email: email },
       {
         razorpay_id: key_id,
         razorpay_secret: encryptedSecret,
-        iv: iv, // store the IV too!
-        active: true
+        iv: iv,
+        active: true,
       },
-      { new: true } // return the updated document if needed
+      { new: true }
     );
-    
+
     return { success: true, message: "Done" };
   } catch (err) {
     console.error("Credentials error:", err);
     return { success: false, message: "Internal server error" };
   }
-
-}
-export const getcreds = async (email)=>{
+};
+export const getcreds = async (email) => {
   try {
     await connectDb();
-  
-    const user = await User.findOne({email: email});
-    if(!user){
-      return {success: false, message: "User does not exist"};
+
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return { success: false, message: "User does not exist" };
     }
-    if(user.active==false) return {success: true, message: "User is not active"};
+    if (user.active == false)
+      return { success: true, message: "User is not active" };
     const decryptedSecret = decrypt(user.razorpay_secret, user.iv);
 
-    return { success: true, id: user.razorpay_id, secret: decryptedSecret, isactive: user.active };
+    return {
+      success: true,
+      id: user.razorpay_id,
+      secret: decryptedSecret,
+      isactive: user.active,
+    };
   } catch (err) {
     console.error("Credentials error:", err);
     return { success: false, message: "Internal server error" };
   }
-
-}
-export const delcreds = async (email)=>{
+};
+export const delcreds = async (email) => {
   try {
     await connectDb();
-  
-    const user = await User.findOne({email: email});
-    if(!user){
-      return {success: false, message: "User does not exist"};
+
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return { success: false, message: "User does not exist" };
     }
-    const rsp = await User.findOneAndUpdate({email: email}, {razorpay_id: "", razorpay_secret: "", active: false});
+    const rsp = await User.findOneAndUpdate(
+      { email: email },
+      { razorpay_id: "", razorpay_secret: "", active: false }
+    );
     return { success: true, message: "Account deactivated" };
   } catch (err) {
     console.error("Credentials error:", err);
     return { success: false, message: "Internal server error" };
   }
-  
-}
+};
 
-export const updatename = async(email, newname)=>{
+export const updatename = async (email, newname) => {
   try {
     await connectDb();
-  
-    const user = await User.findOne({email: email});
-    if(!user){
-      return {success: false, message: "User does not exist"};
+
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return { success: false, message: "User does not exist" };
     }
-    const rsp = await User.findOneAndUpdate({email: email}, {name: newname});
+    const rsp = await User.findOneAndUpdate(
+      { email: email },
+      { name: newname }
+    );
     return { success: true, message: "Name updated" };
   } catch (err) {
     console.error("Credentials error:", err);
     return { success: false, message: "Internal server error" };
   }
-
-}
-
-
+};
 
 export const validateRazorpayCredentials = async (key_id, key_secret) => {
   try {
@@ -241,19 +251,14 @@ export const validateRazorpayCredentials = async (key_id, key_secret) => {
       key_id,
       key_secret,
     });
-    
-    // Make a harmless API call
-    const orders = await instance.orders.all({ limit: 1 });
-    // console.log(orders);  
 
-    // If no error, credentials are valid
+    const orders = await instance.orders.all({ limit: 1 });
+
     return { valid: true, message: "Credentials are valid" };
   } catch (err) {
-    // Credentials are invalid
     return { valid: false, message: "Invalid credentials", error: err.message };
   }
 };
-
 
 export const getPayments = async (userEmail) => {
   try {
@@ -291,19 +296,17 @@ export const getPayments = async (userEmail) => {
   }
 };
 
-
-export const getAllTransactions = async(email)=>{
+export const getAllTransactions = async (email) => {
   try {
     await connectDb();
-  
+
     const transactions = await Payment.find({
       $or: [{ from_user: email }, { to_user: email }],
     });
-  
-    return {success: true, data: JSON.parse(JSON.stringify(transactions))};
+
+    return { success: true, data: JSON.parse(JSON.stringify(transactions)) };
   } catch (err) {
     console.error("getUserPaymentStats error:", err);
-    return {success: false, message: err.message};
+    return { success: false, message: err.message };
   }
-  
-}
+};

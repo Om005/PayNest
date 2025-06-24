@@ -5,14 +5,8 @@ import {
   IconBrandGoogle,
   IconBrandGithub,
   IconShield,
-  IconLock,
-  IconCheck,
-  IconEye,
-  IconEyeOff,
-  IconFingerprint,
 } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
-import { NavbarDemo } from "@/components/NavbarDemo"
 
 export default function Signin() {
     const {data: session} = useSession();
@@ -62,19 +56,14 @@ export default function Signin() {
     }, 2000)
   }
 
-  const inputClasses =
-    "w-full px-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 backdrop-blur-sm"
-  const labelClasses = "block text-sm font-semibold text-gray-300 mb-2"
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent"></div>
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
 
       <div className="w-full max-w-md relative z-10">
-        {/* Trust Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl mb-4 shadow-lg shadow-emerald-500/25">
             <IconShield className="w-8 h-8 text-white" />
@@ -87,14 +76,8 @@ export default function Signin() {
           </p>
         </div>
 
-        {/* Security Badges */}
-
-        {/* Main Form Card */}
         <div className="bg-slate-900/30 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
-
-            {/* Social Login */}
             <button
                 onClick={()=>signIn("google")}
               type="button"
@@ -113,7 +96,6 @@ export default function Signin() {
             </button>
           </form>
 
-          {/* Signup Link */}
           <div className="mt-8 text-center">
             <p className="text-gray-400 text-sm">
               Don't have an account?{" "}
@@ -124,7 +106,6 @@ export default function Signin() {
           </div>
         </div>
 
-        {/* Security Footer */}
         <div className="mt-8 text-center">
           <div className="flex items-center justify-center gap-2 text-xs text-gray-500 mb-2">
             <IconShield className="w-4 h-4 text-emerald-400" />
@@ -132,7 +113,6 @@ export default function Signin() {
           </div>
         </div>
 
-        {/* Quick Stats */}
       </div>
     </div>
   )

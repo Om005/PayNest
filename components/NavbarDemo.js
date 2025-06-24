@@ -56,12 +56,6 @@ function Navbar({ className }) {
             <HoveredLink href="/" icon={<IconHome className="w-4 h-4" />}>
               Home
             </HoveredLink>
-            <HoveredLink href="/about" icon={<IconInfoCircle className="w-4 h-4" />}>
-              About Us
-            </HoveredLink>
-            <HoveredLink href="/contact" icon={<IconMail className="w-4 h-4" />}>
-              Contact
-            </HoveredLink>
           </div>
         </MenuItem>
 

@@ -1,25 +1,31 @@
-"use client"
+"use client";
 
-import { ArrowRight, Shield, Zap, Users, CheckCircle, Send, Smartphone, CreditCard, Sparkles } from "lucide-react"
-
+import {
+  ArrowRight,
+  Shield,
+  Zap,
+  Users,
+  CheckCircle,
+  Send,
+  Smartphone,
+  CreditCard,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 export default function HomePage() {
+  const router = useRouter();
+  const { data: session } = useSession();
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-950 to-slate-900 relative overflow-hidden">
-      {/* Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent"></div>
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
-      {/* Hero Section */}
       <section className="container mx-auto px-4 pt-20 pb-16 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8 animate-fade-in-up">
               <div className="space-y-6">
-                <div className="group inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 backdrop-blur-sm text-emerald-300 text-sm font-medium hover:from-emerald-500/30 hover:to-teal-500/30 transition-all duration-300 cursor-pointer">
-                  <Sparkles className="w-4 h-4 mr-2 group-hover:animate-spin" />🚀 Trusted by 50,000+ users worldwide
-                </div>
-
                 <h1 className="text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-emerald-300 leading-tight tracking-tight">
                   Send Money
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 animate-gradient-x">
@@ -29,20 +35,30 @@ export default function HomePage() {
                 </h1>
 
                 <p className="text-xl text-gray-300 leading-relaxed max-w-lg font-light">
-                  Transform the way you transfer money. Lightning-fast, ultra-secure, and beautifully simple. Your
-                  money, delivered in seconds, not days.
+                  Transform the way you transfer money. Lightning-fast,
+                  ultra-secure, and beautifully simple. Your money, delivered in
+                  seconds, not days.
                 </p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <span className="relative z-10">Get Started Free</span>
-                  <ArrowRight className="relative z-10 ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-                </button>
+                <button
+                  onClick={() => {
+                    if (session) {
+                      router.push("/send");
+                    }
+                    else{
+                      router.push("/signup");
 
-                <button className="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-emerald-300 border-2 border-emerald-500/50 hover:border-emerald-400 rounded-2xl backdrop-blur-sm hover:bg-emerald-500/10 transition-all duration-300 transform hover:-translate-y-1">
-                  <span className="group-hover:text-emerald-200 transition-colors duration-300">Watch Demo</span>
+                    }
+                  }}
+                  className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <span className="relative z-10">
+                    Make your first transaction
+                  </span>
+                  <ArrowRight className="relative z-10 ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </button>
               </div>
 
@@ -68,16 +84,16 @@ export default function HomePage() {
 
             <div className="relative animate-fade-in-right">
               <div className="relative">
-                {/* Floating Elements */}
                 <div className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl rotate-12 animate-float opacity-80"></div>
                 <div className="absolute -bottom-6 -right-6 w-12 h-12 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-xl -rotate-12 animate-float-delayed opacity-80"></div>
 
-                {/* Main Card */}
                 <div className="relative bg-gradient-to-br from-emerald-600/90 to-teal-700/90 rounded-3xl p-8 shadow-2xl shadow-emerald-500/20 backdrop-blur-sm border border-emerald-500/20 transform rotate-2 hover:rotate-1 transition-transform duration-500">
                   <div className="bg-slate-900/95 rounded-2xl p-6 transform -rotate-2 border border-slate-700/50 backdrop-blur-sm">
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-white text-lg">Quick Transfer</h3>
+                        <h3 className="font-bold text-white text-lg">
+                          Quick Transfer
+                        </h3>
                         <div className="p-2 bg-emerald-500/20 rounded-xl">
                           <Send className="h-6 w-6 text-emerald-400" />
                         </div>
@@ -86,13 +102,17 @@ export default function HomePage() {
                       <div className="space-y-4">
                         <div className="flex items-center gap-4 p-4 bg-slate-800/80 rounded-xl border border-slate-700/50 hover:bg-slate-800 transition-colors duration-300 group cursor-pointer">
                           <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <span className="text-white font-bold text-lg">A</span>
+                            <span className="text-white font-bold text-lg">
+                              A
+                            </span>
                           </div>
                           <div>
                             <p className="font-semibold text-white group-hover:text-emerald-300 transition-colors duration-300">
                               Alex Johnson
                             </p>
-                            <p className="text-sm text-gray-400">alex@paynest.com</p>
+                            <p className="text-sm text-gray-400">
+                              alex@paynest.com
+                            </p>
                           </div>
                         </div>
 
@@ -101,7 +121,9 @@ export default function HomePage() {
                           <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 relative z-10">
                             $2,500.00
                           </span>
-                          <p className="text-gray-400 text-sm mt-1">Ready to send</p>
+                          <p className="text-gray-400 text-sm mt-1">
+                            Ready to send
+                          </p>
                         </div>
 
                         <button className="w-full py-4 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 transition-all duration-300">
@@ -117,7 +139,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/50 to-slate-900/50"></div>
         <div className="container mx-auto px-4 relative z-10">
@@ -127,7 +148,8 @@ export default function HomePage() {
                 What You Get
               </h2>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto font-light">
-                Experience the next generation of financial technology with features designed for the modern world
+                Experience the next generation of financial technology with
+                features designed for the modern world
               </p>
             </div>
 
@@ -152,7 +174,8 @@ export default function HomePage() {
                 {
                   icon: Users,
                   title: "Effortlessly Simple",
-                  description: "Intuitive design that makes complex financial operations feel like child's play.",
+                  description:
+                    "Intuitive design that makes complex financial operations feel like child's play.",
                   gradient: "from-purple-400 to-pink-500",
                   bgGradient: "from-purple-500/10 to-pink-500/10",
                 },
@@ -188,7 +211,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How It Works Section */}
       <section className="py-24 bg-gradient-to-b from-slate-900/50 to-black/50 relative">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
@@ -196,7 +218,9 @@ export default function HomePage() {
               <h2 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
                 How It Works
               </h2>
-              <p className="text-xl text-gray-400 font-light">Three simple steps to financial freedom</p>
+              <p className="text-xl text-gray-400 font-light">
+                Three simple steps to financial freedom
+              </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-12">
@@ -211,13 +235,15 @@ export default function HomePage() {
                   step: "2",
                   icon: CreditCard,
                   title: "Setup Your Credentials",
-                  description: "Enter your razorpay id and secret which will be encrypted before storing",
+                  description:
+                    "Enter your razorpay id and secret which will be encrypted before storing",
                 },
                 {
                   step: "3",
                   icon: Send,
                   title: "Send Instantly",
-                  description: "Done, now you can send money to any active account",
+                  description:
+                    "Done, now you can send money to any active account",
                 },
               ].map((step, index) => (
                 <div
@@ -227,7 +253,9 @@ export default function HomePage() {
                 >
                   <div className="relative">
                     <div className="w-24 h-24 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-emerald-500/30 group-hover:shadow-emerald-500/50 group-hover:scale-110 transition-all duration-500">
-                      <span className="text-3xl font-black text-white">{step.step}</span>
+                      <span className="text-3xl font-black text-white">
+                        {step.step}
+                      </span>
                     </div>
                     {index < 2 && (
                       <div className="hidden md:block absolute top-12 left-full w-full h-0.5 bg-gradient-to-r from-emerald-500/50 to-transparent"></div>
@@ -256,36 +284,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/20 via-teal-900/20 to-cyan-900/20"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent"></div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-5xl mx-auto text-center space-y-10 animate-fade-in-up">
-            <h2 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-emerald-300 to-teal-400">
-              Ready to Transform
-              <span className="block">Your Financial Future?</span>
-            </h2>
-
-            <p className="text-2xl text-gray-300 font-light max-w-3xl mx-auto leading-relaxed">
-              Join the revolution. Experience money transfers like never before.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
-              <button className="group relative inline-flex items-center justify-center px-10 py-5 text-xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white rounded-2xl shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50 transform hover:-translate-y-2 transition-all duration-500 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <span className="relative z-10">Start Your Journey</span>
-                <ArrowRight className="relative z-10 ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
-              </button>
-
-              <button className="group inline-flex items-center justify-center px-10 py-5 text-xl font-bold text-emerald-300 border-2 border-emerald-500/50 hover:border-emerald-400 rounded-2xl backdrop-blur-sm hover:bg-emerald-500/10 transition-all duration-500 transform hover:-translate-y-2">
-                <span className="group-hover:text-emerald-200 transition-colors duration-300">Explore Features</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+      
 
       <style jsx>{`
         @keyframes fade-in-up {
@@ -298,7 +297,7 @@ export default function HomePage() {
             transform: translateY(0);
           }
         }
-        
+
         @keyframes fade-in-right {
           from {
             opacity: 0;
@@ -309,27 +308,30 @@ export default function HomePage() {
             transform: translateX(0);
           }
         }
-        
+
         @keyframes float {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0px) rotate(12deg);
           }
           50% {
             transform: translateY(-10px) rotate(12deg);
           }
         }
-        
+
         @keyframes float-delayed {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0px) rotate(-12deg);
           }
           50% {
             transform: translateY(-8px) rotate(-12deg);
           }
         }
-        
+
         @keyframes gradient-x {
-          0%, 100% {
+          0%,
+          100% {
             background-size: 200% 200%;
             background-position: left center;
           }
@@ -338,27 +340,27 @@ export default function HomePage() {
             background-position: right center;
           }
         }
-        
+
         .animate-fade-in-up {
           animation: fade-in-up 0.8s ease-out forwards;
         }
-        
+
         .animate-fade-in-right {
           animation: fade-in-right 0.8s ease-out forwards;
         }
-        
+
         .animate-float {
           animation: float 3s ease-in-out infinite;
         }
-        
+
         .animate-float-delayed {
           animation: float-delayed 3s ease-in-out infinite 1.5s;
         }
-        
+
         .animate-gradient-x {
           animation: gradient-x 3s ease infinite;
         }
       `}</style>
     </div>
-  )
+  );
 }

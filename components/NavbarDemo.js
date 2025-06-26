@@ -6,19 +6,13 @@ import {
   IconShield,
   IconUser,
   IconLogout,
-  IconArrowsExchange,
   IconSend,
-  IconReceiptRefund,
   IconHome,
-  IconInfoCircle,
-  IconMail,
   IconLogin,
   IconUserPlus,
-  IconLock,
-  IconNetwork,
   IconCircleDashedPercentage
 } from "@tabler/icons-react"
-
+import { useRouter } from "next/navigation"
 const transition = {
   type: "spring",
   mass: 0.5,
@@ -37,14 +31,18 @@ export function NavbarDemo() {
 }
 
 function Navbar({ className }) {
+  const router = useRouter();
   const { data: session } = useSession()
   const [active, setActive] = useState(null)
 
   return (
     <div className={`fixed top-6 inset-x-0 max-w-4xl mx-auto z-50 ${className}`}>
       <Menu setActive={setActive}>
-        {/* PayNest Logo */}
-        <div className="flex items-center gap-2 mr-8">
+        <div
+        onClick={()=>{
+          router.push("/");
+        }}
+        className="flex cursor-pointer items-center gap-2 mr-8">
           <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center shadow-lg">
             <IconShield className="w-5 h-5 text-white" />
           </div>

@@ -7,6 +7,7 @@ import {
   IconBrandGithub,
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Signup() {
   const { data: session } = useSession();
@@ -59,10 +60,6 @@ export default function Signup() {
     }, 2000);
   };
 
-  const inputClasses =
-    "w-full px-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all duration-300 backdrop-blur-sm";
-  const labelClasses = "block text-sm font-semibold text-gray-300 mb-2";
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-gray-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent"></div>
@@ -89,7 +86,7 @@ export default function Signup() {
                 signIn("google");
               }}
               type="button"
-              className="group w-full flex items-center justify-center gap-3 py-3 px-4 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50 rounded-xl text-gray-300 hover:text-white transition-all duration-300"
+              className="group cursor-pointer w-full flex items-center justify-center gap-3 py-3 px-4 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50 rounded-xl text-gray-300 hover:text-white transition-all duration-300"
             >
               <IconBrandGoogle className="w-5 h-5" />
               <span className="font-medium">Continue with Google</span>
@@ -99,7 +96,7 @@ export default function Signup() {
                 signIn("github");
               }}
               type="button"
-              className="group w-full flex items-center justify-center gap-3 py-3 px-4 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50 rounded-xl text-gray-300 hover:text-white transition-all duration-300"
+              className="group cursor-pointer w-full flex items-center justify-center gap-3 py-3 px-4 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50 rounded-xl text-gray-300 hover:text-white transition-all duration-300"
             >
               <IconBrandGithub className="w-5 h-5" />
               <span className="font-medium">Continue with Github</span>
@@ -109,12 +106,12 @@ export default function Signup() {
           <div className="mt-8 text-center">
             <p className="text-gray-400 text-sm">
               Already have an account?{" "}
-              <a
+              <Link
                 href="/signin"
                 className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors"
               >
                 Sign in here
-              </a>
+              </Link>
             </p>
           </div>
         </div>

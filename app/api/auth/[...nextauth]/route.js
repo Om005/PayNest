@@ -22,7 +22,6 @@ export const authoptions = NextAuth({
     async signIn({ user, account, profile, credentials }) {
       if (account.provider == "google") {
         const email = profile.email;
-        // const client = await mongoose.connect(process.env.MONGO_URI);
         await connectDb();
         const curruser = await User.findOne({ email: email });
 

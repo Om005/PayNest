@@ -7,7 +7,7 @@ import {
   IconShield,
 } from "@tabler/icons-react"
 import { useRouter } from "next/navigation"
-
+import Link from "next/link"
 export default function Signin() {
     const {data: session} = useSession();
         const router = useRouter();
@@ -22,11 +22,6 @@ export default function Signin() {
     email: "",
     pass: "",
   })
-
-  const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
-  const [errors, setErrors] = useState({})
-  const [isLoading, setIsLoading] = useState(false)
 
   const validateForm = () => {
     const newErrors = {}
@@ -49,7 +44,6 @@ export default function Signin() {
     if (!validateForm()) return
 
     setIsLoading(true)
-    // Simulate API call
     setTimeout(() => {
       setIsLoading(false)
       console.log("Form submitted", form)
@@ -98,10 +92,10 @@ export default function Signin() {
 
           <div className="mt-8 text-center">
             <p className="text-gray-400 text-sm">
-              Don't have an account?{" "}
-              <a href="/signup" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors">
+              Don&apos;t have an account?{" "}
+              <Link href="/signup" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors">
                 Create one here
-              </a>
+              </Link>
             </p>
           </div>
         </div>

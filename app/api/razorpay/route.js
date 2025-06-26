@@ -3,6 +3,7 @@ import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils"
 import Payment from "@/models/Payment";
 import Razorpay from "razorpay";
 import connectDb from "@/db/connectDB";
+import { getcreds } from "@/actions/useractions";
 
 
 export const POST = async(req)=>{
@@ -10,12 +11,12 @@ export const POST = async(req)=>{
     let body = await req.formData();
     body = Object.fromEntries(body);
 
-    let p = Payment.findOne({oid: body.razorpay_order_id});
+    let p = await Payment.findOne({oid: body.razorpay_order_id});
     if(!p){
         return NextResponse.json({success: false, message: "Order Id not found"});
     }
-
-    let val = await validatePaymentVerification({"order_id": body.razorpay_order_id, "payment_id": body.razorpay_payment_id}, body.razorpay_signature, process.env.KEY_SECRET);
+    const rsp = await getcreds(p.to_user);
+    let val = await validatePaymentVerification({"order_id": body.razorpay_order_id, "payment_id": body.razorpay_payment_id}, body.razorpay_signature, rsp.secret);
 
     if(val){
         const updated = await Payment.findOneAndUpdate({oid: body.razorpay_order_id}, {status: "completed"}, {new: true});

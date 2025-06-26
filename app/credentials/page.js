@@ -296,14 +296,14 @@ export default function Credentials() {
                       <div className="flex gap-4 pt-4">
                         <button
                           onClick={handleEdit}
-                          className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg shadow-emerald-500/25"
+                          className="flex cursor-pointer items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 shadow-lg shadow-emerald-500/25"
                         >
                           <IconRefresh className="w-5 h-5" />
                           <span>Update Credentials</span>
                         </button>
                         <button
                           onClick={handleDelete}
-                          className="flex items-center gap-2 px-6 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 hover:border-red-500/50 text-red-400 hover:text-red-300 font-semibold rounded-xl transition-all duration-300"
+                          className="flex cursor-pointer items-center gap-2 px-6 py-3 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 hover:border-red-500/50 text-red-400 hover:text-red-300 font-semibold rounded-xl transition-all duration-300"
                         >
                           <IconTrash className="w-5 h-5" />
                           <span>Delete</span>
@@ -400,7 +400,7 @@ export default function Credentials() {
                         >
                           {isLoading ? (
                             <>
-                              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                              <div className="cursor-pointer w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                               Saving...
                             </>
                           ) : (
@@ -416,7 +416,7 @@ export default function Credentials() {
                           <button
                             type="button"
                             onClick={handleCancel}
-                            className="px-6 py-3 text-gray-400 hover:text-white transition-colors duration-300"
+                            className="cursor-pointer px-6 py-3 text-gray-400 hover:text-white transition-colors duration-300"
                           >
                             Cancel
                           </button>
